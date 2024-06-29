@@ -62,7 +62,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $usernameErr = "Username is already taken";
         } else {
             // Insert new user into database
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+            if (function_exists('password_hash')) {
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+            } else {
+                // Fallback to crypt() if password_hash() is not available
+                $salt = mcrypt_create_iv(22, MCRYPT_DEV_URANDOM);
+                $hashed_password = crypt($password, '$2a$12$' . $salt);
+            }
+
             $insert_query = "INSERT INTO users (FirstName, LastName, Email, Username, Password) 
                              VALUES ('" . mysqli_real_escape_string($conn, $first_name) . "', 
                                      '" . mysqli_real_escape_string($conn, $last_name) . "', 
