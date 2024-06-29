@@ -66,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
             } else {
                 // Fallback to crypt() if password_hash() is not available
-                $salt = mcrypt_create_iv(22, MCRYPT_DEV_URANDOM);
+                $salt = bin2hex(random_bytes(22)); // Generate a random salt
                 $hashed_password = crypt($password, '$2a$12$' . $salt);
             }
 
